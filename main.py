@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from pathlib import Path
 
 print("Welcome to packreator!")
@@ -42,3 +43,9 @@ match (pack_type):
         Path(f"{pack_name}/assets/minecraft/sounds")
     case "CT":
         Path(f"{pack_name}/assets/minecraft/textures")
+        texture_type = input("What will your pack retexture? Blocks, or items? ")
+        if "block" in texture_type.lower():
+            Path(f"{pack_name}/assets/minecraft/textures/block")
+        elif "item" in texture_type.lower():
+            Path(f"{pack_name}/assets/minecraft/textures/item")
+            
