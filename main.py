@@ -66,6 +66,26 @@ match (pack_type):
         print("Custom sound folder structure complete!")
     case "CS":
         ensure_dir(f"{pack_name}/assets/minecraft/sounds")
+        source_dir = Path("Your assets go here/Custom Sounds")
+
+        sound_files = [f for f in source_dir.iterdir() if f.is_file() and f.suffix == ".ogg"]
+
+        if not sound_files:
+            print("No .ogg files found in 'Your assets go here/Custom Sounds'!")
+        else:
+            for file_path in sound_files:
+                print(f"\nProcessing file: {file_path.name}")
+                vanilla_path = input("Enter vanilla sound path to replace (e.g. entity/player/attack/strong1): ").strip().strip("/")
+
+                # Split the folder path from the final file name
+                dest_file = Path(f"{pack_name}/assets/minecraft/sounds") / f"{vanilla_path}.ogg"
+
+                # Use your ensure_dir helper on the parent folder
+                ensure_dir(dest_file.parent)
+
+                # Move and rename
+                shutil.move(file_path, dest_file)
+                print(f"Replaced {vanilla_path} with {file_path.name}!")
     case "CT":
         ensure_dir(f"{pack_name}/assets/minecraft/textures")
         texture_type = input("What will your pack retexture? Blocks, or items? ")
