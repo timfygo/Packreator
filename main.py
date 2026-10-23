@@ -32,7 +32,9 @@ with open(file_path, "w") as f:
     json.dump(mcmeta, f, indent=2)
 
 def ensure_dir(path):
-    return Path(path).mkdir(parents=True, exist_ok=True)
+    path_obj = Path(path)
+    path_obj.mkdir(exist_ok=True, parents=True)
+    return path_obj
 
 # Create assets folder
 ensure_dir(f"{pack_name}/assets/minecraft")
@@ -41,7 +43,7 @@ print("Base structure complete!")
 
 match (pack_type):
     case "AS":
-        ensure_dir(f"{pack_name}/assets/minecraft/sounds/custom")
+        dest_custom_dir = ensure_dir(f"{pack_name}/assets/minecraft/sounds/custom")
         source_dir = Path(f"Your assets go here/Custom Sounds")
         destination_dir = Path(f"{pack_name}/assets/minecraft/sounds/")
         
@@ -50,14 +52,14 @@ match (pack_type):
         for file_path in sound_folder.iterdir():
             if file_path.is_file() and file_path.suffix == ".ogg":
                 sound_name = file_path.stem
-                sounds_data[sound_name.replace(" ", "_").lower()] = {
+                clean_name = sound_name.replace(" ", "_").lower()
+                sounds_data[clean_name] = {
                     "sounds": [
-                        {
-                            "name": f"minecraft:custom/{sound_name.replace(" ", "_").lower()}"
-                        }
+                        f"minecraft:custom/{clean_name}"
                     ]
                 }
-                shutil.move(file_path, f"{pack_name}/assets/minecraft/sounds/custom")
+                new_file_dest = dest_custom_dir / f"{clean_name}.ogg"
+                shutil.move(file_path, new_file_dest)
                 print(f"Successfully moved {file_path.name}")
         with open(f"{pack_name}/assets/minecraft/sounds.json", "w") as f:
             json.dump(sounds_data, f, indent=2)
